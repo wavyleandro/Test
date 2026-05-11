@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KI Content Journal | Management & Digitalisierung</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #0a0f1e;
+            --bg-side: #111827;
+            --bg-card: #1f2937;
+            --accent-color: #38bdf8;
+            --text-main: #f1f5f9;
+            --text-dim: #94a3b8;
+            --border: rgba(56, 189, 248, 0.1);
+            --success: #10b981;
+            --error: #ef4444;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            margin: 0;
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            min-height: 100vh;
+        }
+
+        /* --- STICKY SIDEBAR --- */
+        nav.sidebar {
+            background-color: var(--bg-side);
+            padding: 2rem 1rem;
+            border-right: 1px solid var(--border);
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .nav-header { text-align: center; margin-bottom: 3rem; }
+        .nav-header h2 { font-size: 1.2rem; color: #fff; margin: 0; letter-spacing: 1px; }
+        .badge-uni { background: var(--accent-color); color: var(--bg-main); font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 20px; text-transform: uppercase; font-weight: bold; }
+
+        .nav-links { list-style: none; padding: 0; margin: 0; }
+        .nav-links li { margin-bottom: 0.5rem; }
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1rem;
+            color: var(--text-dim);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .nav-links a:hover { background: rgba(56, 189, 248, 0.1); color: #fff; }
+        .nav-links i { margin-right: 1rem; width: 20px; text-align: center; color: var(--accent-color); }
+
+        /* --- MAIN CONTENT --- */
+        main { padding: 4rem; }
+
+        .dashboard-header { margin-bottom: 3rem; border-bottom: 1px solid var(--border); padding-bottom: 2rem; }
+        h1 { font-size: 2.5rem; margin: 0; }
+
+        /* Video Modul */
+        .video-module {
+            background: var(--bg-side);
+            border-radius: 20px;
+            padding: 2.5rem;
+            border: 1px solid var(--border);
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 3rem;
+            margin-bottom: 4rem;
+            align-items: center;
+        }
+
+        .video-box {
+            position: relative; padding-bottom: 56.25%; height: 0;
+            overflow: hidden; border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+        .video-box iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+        .video-text h2 { color: #fff; font-size: 1.8rem; margin-top: 0; }
+        .video-text p { color: var(--text-dim); line-height: 1.8; font-size: 1.05rem; }
+
+        /* Sektionen */
+        section.topic { padding: 5rem 0; border-bottom: 1px solid var(--border); scroll-margin-top: 2rem; }
+        h2.section-title { font-size: 2rem; margin-bottom: 2rem; display: flex; align-items: center; }
+        h2.section-title i { margin-right: 1rem; color: var(--accent-color); font-size: 1.5rem; }
+
+        .algo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+        .card { background: var(--bg-card); padding: 2rem; border-radius: 16px; border: 1px solid var(--border); }
+        .card h4 { margin-top: 0; color: var(--accent-color); text-transform: uppercase; letter-spacing: 1px; }
+
+        .management-insight {
+            grid-column: 1 / -1;
+            background: rgba(56, 189, 248, 0.05);
+            border-left: 4px solid var(--accent-color);
+            padding: 1.5rem; margin-top: 2rem; font-style: italic;
+        }
+
+        .code-term { font-family: 'Fira Code', monospace; color: var(--accent-color); }
+
+        /* --- QUIZ STYLING --- */
+        .quiz-container {
+            background: var(--bg-side);
+            padding: 2.5rem;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
+        
+        .quiz-box {
+            margin-bottom: 2.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 2rem;
+        }
+        .quiz-box:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+        .quiz-question { font-size: 1.2rem; font-weight: bold; margin-bottom: 1.5rem; color: #fff; }
+        .quiz-options { display: grid; gap: 1rem; }
+        .quiz-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+        .quiz-btn:hover:not(:disabled) { background: rgba(56, 189, 248, 0.05); border-color: var(--accent-color); }
+        .quiz-btn:disabled { cursor: not-allowed; }
+
+        .quiz-btn.correct { background: rgba(16, 185, 129, 0.2) !important; border-color: var(--success) !important; color: #fff !important; }
+        .quiz-btn.wrong { background: rgba(239, 68, 68, 0.2) !important; border-color: var(--error) !important; color: #fff !important; }
+        
+        .quiz-feedback { margin-top: 1.5rem; font-weight: bold; min-height: 1.5rem; font-size: 1.05rem; }
+        .quiz-feedback.correct { color: var(--success); }
+        .quiz-feedback.wrong { color: var(--error); }
+
+        footer { text-align: center; padding: 4rem; color: var(--text-dim); font-size: 0.9rem; }
+        html { scroll-behavior: smooth; }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="nav-header">
+            <span class="badge-uni">Management & Digitalisierung</span>
+            <h2>KI HUB</h2>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#overview"><i class="fas fa-play-circle"></i> Übersicht</a></li>
+            <li><a href="#context"><i class="fas fa-globe"></i> Kontext</a></li>
+            <li><a href="#bigdata"><i class="fas fa-database"></i> Big Data</a></li>
+            <li><a href="#gartner"><i class="fas fa-chart-pie"></i> Gartner Modell</a></li>
+            <li><a href="#regression"><i class="fas fa-chart-line"></i> Regression</a></li>
+            <li><a href="#knn"><i class="fas fa-users"></i> k-NN</a></li>
+            <li><a href="#svm"><i class="fas fa-border-all"></i> SVM</a></li>
+            <li><a href="#nn"><i class="fas fa-brain"></i> Neuronale Netze</a></li>
+            <li><a href="#cnn"><i class="fas fa-eye"></i> CNN</a></li>
+            <li><a href="#quiz"><i class="fas fa-tasks"></i> KI-Quiz</a></li>
+            <li><a href="#future"><i class="fas fa-rocket"></i> Zukunft</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <header class="dashboard-header">
+            <h1>KI | Anwendungen & Methoden</h1>
+            <p style="color: var(--text-dim);">Portfolio & Learning Journal • 4. Semester • 2026</p>
+        </header>
+
+        <!-- ÜBERSICHT -->
+        <section id="overview" class="video-module">
+            <div class="video-box">
+                <iframe src="https://app.colossyan.com/embed/33755afc-1fc2-4a50-986c-bf3466b7c502" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+            </div>
+            <div class="video-text">
+                <h2>Die Relevanz von KI</h2>
+                <p>
+                    KI ist heute weit mehr als nur ein Trend – sie ist das <b>Betriebssystem der modernen Wirtschaft</b>. 
+                    In einer digitalisierten Welt ermöglicht sie es, riesige Datenmengen in Echtzeit zu analysieren, 
+                    komplexe Prozesse zu automatisieren und personalisierte Erlebnisse zu schaffen. 
+                    Für das Management bedeutet das: Wer KI versteht und einsetzt, sichert sich den entscheidenden 
+                    Wettbewerbsvorteil durch datenbasierte Präzision.
+                </p>
+            </div>
+        </section>
+
+        <!-- KONTEXT -->
+        <section id="context" class="topic">
+            <h2 class="section-title"><i class="fas fa-globe"></i> Warum KI heute wichtig ist</h2>
+            <div class="card">
+                <p>KI transformiert Industrien, indem sie kognitive Aufgaben übernimmt. Im Studium <i>Management & Digitalisierung</i> ist dies der Hebel, um operative Exzellenz mit strategischer Innovation zu verbinden.</p>
+            </div>
+        </section>
+
+        <!-- BIG DATA -->
+        <section id="bigdata" class="topic">
+            <h2 class="section-title"><i class="fas fa-database"></i> Big Data: Das Fundament</h2>
+            <div class="card">
+                <p>Ohne Daten gibt es keine Intelligenz. Wir fokussieren uns auf die 5 V's: <span class="code-term">Volume</span>, <span class="code-term">Velocity</span>, <span class="code-term">Variety</span>, <span class="code-term">Veracity</span> und <span class="code-term">Value</span>.</p>
+            </div>
+        </section>
+
+        <!-- GARTNER -->
+        <section id="gartner" class="topic">
+            <h2 class="section-title"><i class="fas fa-chart-pie"></i> Gartners Analytics Capability</h2>
+            <div class="algo-grid">
+                <div class="card">
+                    <h4>Descriptive & Diagnostic</h4>
+                    <p>Rückblickende Analyse: Was ist passiert und warum? Fokus auf Datenaufbereitung.</p>
+                </div>
+                <div class="card">
+                    <h4>Predictive & Prescriptive</h4>
+                    <p>Zukunftsorientiert: Was wird passieren und wie reagieren wir optimal darauf?</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- REGRESSION -->
+        <section id="regression" class="topic">
+            <h2 class="section-title"><i class="fas fa-chart-line"></i> Regression (Algorithmen I)</h2>
+            <div class="algo-grid">
+                <div class="card">
+                    <h4>Definition</h4>
+                    <p>Vorhersage kontinuierlicher Werte. Mathematische Modellierung von Zusammenhängen.</p>
+                </div>
+                <div class="card">
+                    <h4>Formel</h4>
+                    <p>Die Basis der linearen Regression: <br> $Y = b_0 + b_1 \cdot X + \epsilon$</p>
+                </div>
+                <div class="management-insight">
+                    <b>Management Insight:</b> Nutzen wir für Sales-Forecasts und Preis-Elastizitäts-Modelle.
+                </div>
+            </div>
+        </section>
+
+        <!-- KNN -->
+        <section id="knn" class="topic">
+            <h2 class="section-title"><i class="fas fa-users"></i> k-Nearest Neighbors (Algorithmen II)</h2>
+            <div class="algo-grid">
+                <div class="card">
+                    <h4>Klassifikation</h4>
+                    <p>Ein "Lazy Learner", der neue Datenpunkte basierend auf der Ähnlichkeit zu bestehenden Nachbarn einstuft.</p>
+                </div>
+                <div class="card">
+                    <h4>Anwendung</h4>
+                    <p>Customer Segmentation und Empfehlungs-Engines.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SVM -->
+        <section id="svm" class="topic">
+            <h2 class="section-title"><i class="fas fa-border-all"></i> Support Vector Machines (SVM)</h2>
+            <div class="algo-grid">
+                <div class="card">
+                    <h4>Das Prinzip</h4>
+                    <p>SVMs suchen nach der optimalen Grenze (Hyperplane) zwischen Datenklassen. Das Ziel ist es, den Abstand (Margin) zwischen den Klassen zu maximieren.</p>
+                </div>
+                <div class="card">
+                    <h4>Einsatzbereich</h4>
+                    <p>Perfekt für komplexe Klassifikationsprobleme wie Spam-Filterung oder Text-Kategorisierung.</p>
+                </div>
+                <div class="management-insight">
+                    <b>Management Insight:</b> Extrem robust gegen Ausreißer. Ideal, um klare Trennlinien in Risiko- oder Kundengruppen zu ziehen.
+                </div>
+            </div>
+        </section>
+
+        <!-- NEURONALE NETZE -->
+        <section id="nn" class="topic">
+            <h2 class="section-title"><i class="fas fa-brain"></i> Neuronale Netze</h2>
+            <div class="algo-grid">
+                <div class="card">
+                    <h4>Architektur</h4>
+                    <p>Inspirierte Struktur aus Input, Hidden und Output Layers. Lernt durch Gewichtungsanpassungen der Neuronen.</p>
+                </div>
+                <div class="card">
+                    <h4>Stärke</h4>
+                    <p>Kann extrem komplexe, nicht-lineare Muster erkennen, bei denen klassische Statistik versagt.</p>
+                </div>
+                <div class="management-insight">
+                    <b>Management Insight:</b> Das "Black Box"-Problem beachten – Entscheidungswege sind oft schwer interpretierbar.
+                </div>
+            </div>
+        </section>
+
+        <!-- CNN -->
+        <section id="cnn" class="topic">
+            <h2 class="section-title"><i class="fas fa-eye"></i> CNN (Convolutional Neural Networks)</h2>
+            <div class="algo-grid">
+                <div class="card">
+                    <h4>Fokus</h4>
+                    <p>Spezialisiert auf Bild- und Videoverarbeitung durch das "Scannen" von Pixel-Mustern mit Filtern.</p>
+                </div>
+                <div class="card">
+                    <h4>Hierarchie</h4>
+                    <p>Lernt schrittweise: Erst Kanten, dann Formen, schließlich ganze Objekte (z. B. Autos oder Gesichter).</p>
+                </div>
+                <div class="management-insight">
+                    <b>Management Insight:</b> Schlüsseltechnologie für autonomes Fahren und medizinische Diagnostik.
+                </div>
+            </div>
+        </section>
+
+        <!-- INTERAKTIVES QUIZ -->
+        <section id="quiz" class="topic">
+            <h2 class="section-title"><i class="fas fa-tasks"></i> Klausur-Check: Teste dein Wissen</h2>
+            <div class="quiz-container">
+                
+                <!-- FRAGE 1 -->
+                <div class="quiz-box">
+                    <div class="quiz-question">1. Welches Modell eignet sich am besten für visuelle Objekterkennung?</div>
+                    <div class="quiz-options">
+                        <button class="quiz-btn" onclick="checkAnswer(this, false, 'B')">A) Lineare Regression</button>
+                        <button class="quiz-btn" onclick="checkAnswer(this, true, 'B')">B) CNN (Convolutional Neural Network)</button>
+                        <button class="quiz-btn" onclick="checkAnswer(this, false, 'B')">C) k-NN</button>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- FRAGE 2 -->
+                <div class="quiz-box">
+                    <div class="quiz-question">2. Was maximiert eine SVM (Support Vector Machine)?</div>
+                    <div class="quiz-options">
+                        <button class="quiz-btn" onclick="checkAnswer(this, true, 'A')">A) Den Abstand (Margin) zwischen Klassen</button>
+                        <button class="quiz-btn" onclick="checkAnswer(this, false, 'A')">B) Die Anzahl der Hidden Layers</button>
+                        <button class="quiz-btn" onclick="checkAnswer(this, false, 'A')">C) Die Datenmenge (Volume)</button>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+                <!-- FRAGE 3 -->
+                <div class="quiz-box">
+                    <div class="quiz-question">3. Warum sind Neuronale Netze oft eine "Black Box"?</div>
+                    <div class="quiz-options">
+                        <button class="quiz-btn" onclick="checkAnswer(this, false, 'C')">A) Weil sie keinen Strom verbrauchen</button>
+                        <button class="quiz-btn" onclick="checkAnswer(this, false, 'C')">B) Weil sie keine Daten benötigen</button>
+                        <button class="quiz-btn" onclick="checkAnswer(this, true, 'C')">C) Weil die internen Gewichtungen schwer nachvollziehbar sind</button>
+                    </div>
+                    <div class="quiz-feedback"></div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="future" class="topic">
+            <h2 class="section-title"><i class="fas fa-rocket"></i> Ausblick</h2>
+            <div class="card" style="text-align: center; border-style: dashed;">
+                <p>Bereit für neue Vorlesungsinhalte... (z.B. NLP, LLMs oder KI-Strategie)</p>
+            </div>
+        </section>
+
+        <footer>
+            <p>&copy; 2026 | KI Anwendungen & Methoden | skibidi </p>
+        </footer>
+    </main>
+
+    <script>
+        function checkAnswer(button, isCorrect, correctLetter) {
+            const quizBox = button.closest('.quiz-box');
+            const buttons = quizBox.querySelectorAll('.quiz-btn');
+            const feedback = quizBox.querySelector('.quiz-feedback');
+            
+            buttons.forEach(btn => btn.disabled = true);
+            
+            if (isCorrect) {
+                button.classList.add('correct');
+                feedback.innerHTML = "🎯 Richtig gelöst! Gute Vorbereitung auf die Klausur.";
+                feedback.className = "quiz-feedback correct";
+            } else {
+                button.classList.add('wrong');
+                feedback.innerHTML = "❌ Leider falsch. Schau dir das Thema oben noch einmal an.";
+                feedback.className = "quiz-feedback wrong";
+                
+                buttons.forEach(btn => {
+                    if (btn.innerText.startsWith(correctLetter + ")")) {
+                        btn.classList.add('correct');
+                    }
+                });
+            }
+        }
+    </script>
+
+</body>
+</html>
